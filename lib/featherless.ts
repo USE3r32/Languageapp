@@ -1,3 +1,5 @@
+import { getTranslationCache } from './translation-cache';
+
 interface TranslationRequest {
   text: string;
   targetLanguage: string;
@@ -17,6 +19,7 @@ export class FeatherlessTranslator {
   private maxRetries = 3;
   private retryDelay = 1000; // 1 second
   private requestTimeout = 10000; // 10 seconds
+  private cache = getTranslationCache();
 
   constructor(apiKey?: string) {
     // Use environment variable or provided key
@@ -48,19 +51,48 @@ export class FeatherlessTranslator {
         throw new Error('Target language is required');
       }
 
+      // Check cache first
+      const cachedResult = await this.cache.get(text, sourceLanguage, targetLanguage);
+      if (cachedResult) {
+        const duration = Date.now() - startTime;
+        console.log(`⚡ Cache hit: Translation completed in ${duration}ms`);
+        return {
+          translatedText: cachedResult.translatedText,
+          detectedLanguage: cachedResult.sourceLanguage,
+          confidence: cachedResult.confidence
+        };
+      }
+
       // Quick language detection to avoid unnecessary translation
       const detectedLang = await this.detectLanguage(text);
       if (detectedLang === targetLanguage) {
         console.log(`⚡ Skip translation: already in ${targetLanguage}`);
-        return {
+        const result = {
           translatedText: text,
           detectedLanguage: targetLanguage,
           confidence: 0.95
         };
+
+        // Cache the result
+        await this.cache.set(text, text, detectedLang, targetLanguage, 0.95);
+        return result;
       }
 
       // Perform translation with retry logic
-      return await this.translateWithRetry(text, targetLanguage, sourceLanguage, startTime);
+      const result = await this.translateWithRetry(text, targetLanguage, sourceLanguage, startTime);
+
+      // Cache the successful translation
+      if (result.translatedText && result.confidence && result.confidence > 0.5) {
+        await this.cache.set(
+          text,
+          result.translatedText,
+          result.detectedLanguage || sourceLanguage,
+          targetLanguage,
+          result.confidence
+        );
+      }
+
+      return result;
 
     } catch (error) {
       const duration = Date.now() - startTime;
