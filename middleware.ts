@@ -12,6 +12,9 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  // Get auth context first to establish AsyncLocalStorage
+  const { userId } = await auth();
+  
   // Allow health check endpoint without authentication
   if (req.nextUrl.pathname === '/api/health') {
     return NextResponse.next();
@@ -19,8 +22,6 @@ export default clerkMiddleware(async (auth, req) => {
 
   // Protect routes that require authentication
   if (isProtectedRoute(req)) {
-    const { userId } = await auth();
-    
     if (!userId) {
       // Redirect to sign-in for protected routes
       const signInUrl = new URL('/sign-in', req.url);
