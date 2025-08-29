@@ -12,11 +12,24 @@ const nextConfig = withPWA({
     serverActions: {
       allowedOrigins: ['localhost:3000']
     },
+    // Fix for Next.js 15.5.2 AsyncLocalStorage issues
+    serverComponentsExternalPackages: ['@clerk/nextjs'],
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
   images: { unoptimized: true },
+  // Additional configuration for Next.js 15.5.2 compatibility
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Ensure proper handling of async context in server components
+      config.externals = config.externals || [];
+      config.externals.push({
+        '@clerk/nextjs/server': '@clerk/nextjs/server',
+      });
+    }
+    return config;
+  },
 });
 
 module.exports = nextConfig;

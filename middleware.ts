@@ -1,6 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { headers, cookies } from 'next/headers';
 
 const isProtectedRoute = createRouteMatcher([
   '/chat(.*)',
@@ -13,25 +12,32 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // Get auth context first to establish AsyncLocalStorage
-  const { userId } = await auth();
-  
-  // Allow health check endpoint without authentication
-  if (req.nextUrl.pathname === '/api/health') {
+  try {
+    // Allow health check endpoint without authentication
+    if (req.nextUrl.pathname === '/api/health') {
+      return NextResponse.next();
+    }
+
+    // Get auth context - this must be done within the middleware context
+    const authResult = await auth();
+    const { userId } = authResult;
+    
+    // Protect routes that require authentication
+    if (isProtectedRoute(req)) {
+      if (!userId) {
+        // Redirect to sign-in for protected routes
+        const signInUrl = new URL('/sign-in', req.url);
+        signInUrl.searchParams.set('redirect_url', req.url);
+        return NextResponse.redirect(signInUrl);
+      }
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error('Middleware error:', error);
+    // Fallback to allow the request to continue
     return NextResponse.next();
   }
-
-  // Protect routes that require authentication
-  if (isProtectedRoute(req)) {
-    if (!userId) {
-      // Redirect to sign-in for protected routes
-      const signInUrl = new URL('/sign-in', req.url);
-      signInUrl.searchParams.set('redirect_url', req.url);
-      return NextResponse.redirect(signInUrl);
-    }
-  }
-
-  return NextResponse.next();
 });
 
 export const config = {

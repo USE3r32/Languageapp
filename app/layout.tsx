@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -51,6 +52,7 @@ export default function RootLayout({
           footerActionLink: 'text-green-600 hover:text-green-700',
         }
       }}
+      dynamic
     >
       <html lang="en">
         <head>
@@ -60,7 +62,11 @@ export default function RootLayout({
           <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
           <link rel="apple-touch-icon" href="/icon-192x192.png" />
         </head>
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          <Suspense fallback={<div>Loading...</div>}>
+            {children}
+          </Suspense>
+        </body>
       </html>
     </ClerkProvider>
   );
