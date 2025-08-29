@@ -1,0 +1,7 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="24" fill="#000000"/>
+  <rect x="16" y="16" width="160" height="160" rx="16" fill="#00ff00"/>
+  <path d="M48 96L96 64L144 96L96 128L48 96Z" fill="#000000"/>
+  <circle cx="96" cy="96" r="8" fill="#00ff00"/>
+  <text x="96" y="156" text-anchor="middle" fill="#000000" font-family="Arial, sans-serif" font-size="16" font-weight="bold">TM</text>
+</svg>
