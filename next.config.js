@@ -13,8 +13,6 @@ const nextConfig = withPWA({
       allowedOrigins: ['localhost:3000']
     },
   },
-  // Moved from experimental in Next.js 15.5.2
-  serverExternalPackages: ['@clerk/nextjs'],
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -30,19 +28,9 @@ const nextConfig = withPWA({
         tls: false,
       };
     }
-    
-    // Ensure proper handling of async context in server components
-    if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push({
-        '@clerk/nextjs/server': '@clerk/nextjs/server',
-      });
-    }
-    
+
     return config;
   },
-  // Fix for Next.js 15.5.2 middleware compilation
-  transpilePackages: ['@clerk/nextjs'],
 });
 
 module.exports = nextConfig;

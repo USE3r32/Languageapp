@@ -66,7 +66,7 @@ export class SystemHealthChecker {
         targetLanguage: 'es'
       });
 
-      if (testResult.translatedText && testResult.confidence > 0) {
+      if (testResult.translatedText && (testResult.confidence || 0) > 0) {
         return { status: 'healthy', message: 'Featherless.AI translation service operational' };
       } else {
         return { status: 'error', message: 'Featherless.AI test translation failed' };

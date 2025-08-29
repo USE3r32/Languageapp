@@ -52,7 +52,6 @@ export default function RootLayout({
           footerActionLink: 'text-green-600 hover:text-green-700',
         }
       }}
-      dynamic
     >
       <html lang="en">
         <head>

@@ -200,7 +200,7 @@ export class ClientPushNotificationService {
         // Create new subscription
         subscription = await this.swRegistration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
+          applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey) as BufferSource
         });
       }
 

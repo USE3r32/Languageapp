@@ -358,7 +358,7 @@ EXAMPLES:
         text: 'Hello',
         targetLanguage: 'es'
       });
-      return result.confidence > 0;
+      return (result.confidence || 0) > 0;
     } catch (error) {
       console.error('AI Translation connection test failed:', error);
       return false;

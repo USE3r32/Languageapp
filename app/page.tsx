@@ -47,7 +47,7 @@ export default function Home() {
           
           <div className="space-y-4 mb-12">
             <SignInButton mode="modal">
-              <Button variant="neon" size="lg" className="w-full">
+              <Button variant="default" size="lg" className="w-full bg-green-400 hover:bg-green-500 text-black">
                 Sign In
               </Button>
             </SignInButton>

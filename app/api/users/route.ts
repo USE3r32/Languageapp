@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
     const newUser = await db.insert(users).values({
       clerkId: userId,
       email,
-      name,
+      firstName: name || '',
+      lastName: '',
     }).returning();
 
     return NextResponse.json(newUser[0]);

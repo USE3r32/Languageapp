@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { DatabaseService } from '@/lib/database';
-import { broadcastToConversation, broadcastToUser } from '@/app/api/realtime/route';
+import { broadcastToConversation, broadcastToUser } from '@/lib/sse-broadcast';
 import { translateMessage } from '@/lib/featherless';
 
 export const runtime = 'nodejs';
