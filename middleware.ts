@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 const isProtectedRoute = createRouteMatcher([
   '/chat(.*)',
@@ -8,35 +9,30 @@ const isProtectedRoute = createRouteMatcher([
   '/api/messages(.*)',
   '/api/users(.*)',
   '/api/translate(.*)',
-  '/api/push(.*)'
+  '/api/push(.*)',
+  '/api/realtime(.*)'
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
-  try {
-    // Allow health check endpoint without authentication
-    if (req.nextUrl.pathname === '/api/health') {
-      return NextResponse.next();
-    }
-
-    // Get userId directly from auth object (already resolved)
-    const { userId } = auth;
-    
-    // Protect routes that require authentication
-    if (isProtectedRoute(req)) {
-      if (!userId) {
-        // Redirect to sign-in for protected routes
-        const signInUrl = new URL('/sign-in', req.url);
-        signInUrl.searchParams.set('redirect_url', req.url);
-        return NextResponse.redirect(signInUrl);
-      }
-    }
-
-    return NextResponse.next();
-  } catch (error) {
-    console.error('Middleware error:', error);
-    // Fallback to allow the request to continue
+export default clerkMiddleware((auth, req: NextRequest) => {
+  // Allow health check endpoint without authentication
+  if (req.nextUrl.pathname === '/api/health') {
     return NextResponse.next();
   }
+
+  // Get userId from auth object (synchronously in Next.js 15.5.2)
+  const { userId } = auth();
+  
+  // Protect routes that require authentication
+  if (isProtectedRoute(req)) {
+    if (!userId) {
+      // Redirect to sign-in for protected routes
+      const signInUrl = new URL('/sign-in', req.url);
+      signInUrl.searchParams.set('redirect_url', req.url);
+      return NextResponse.redirect(signInUrl);
+    }
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {
