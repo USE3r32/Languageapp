@@ -18,9 +18,8 @@ export default clerkMiddleware(async (auth, req) => {
       return NextResponse.next();
     }
 
-    // Get auth context - this must be done within the middleware context
-    const authResult = await auth();
-    const { userId } = authResult;
+    // Get userId directly from auth object (already resolved)
+    const { userId } = auth;
     
     // Protect routes that require authentication
     if (isProtectedRoute(req)) {
