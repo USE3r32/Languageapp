@@ -221,6 +221,17 @@ class SSERealtimeService {
     });
   }
 
+  // Send typing indicator
+  sendTyping(conversationId: string, isTyping: boolean) {
+    // In a real implementation, this would send to the backend
+    // For now, we'll emit locally for demo purposes
+    this.emit('user:typing', {
+      userId: this.userId || '',
+      conversationId,
+      isTyping
+    });
+  }
+
   // Notification methods
   private showNotification(title: string, body: string, type: 'success' | 'error' | 'info' | 'message' = 'info') {
     // Browser notification

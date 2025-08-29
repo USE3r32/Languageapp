@@ -3,7 +3,7 @@
 import { useAuth, useUser, UserButton } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
-import ChatInterface from '@/components/ChatInterface';
+import MessengerInterface from '@/components/MessengerInterface';
 import ConversationList from '@/components/ConversationList';
 import SettingsDialog from '@/components/SettingsDialog';
 import DirectMessageDialog from '@/components/DirectMessageDialog';
@@ -155,7 +155,14 @@ export default function ChatPage() {
           !showConversations ? 'flex' : 'hidden'
         } md:flex flex-col flex-1 bg-white`}>
           {selectedConversation ? (
-            <ChatInterface conversationId={selectedConversation} />
+            <MessengerInterface
+              conversationId={selectedConversation}
+              conversationName="Chat"
+              onBack={() => {
+                setSelectedConversation(null);
+                setShowConversations(true);
+              }}
+            />
           ) : (
             <div className="flex-1 flex items-center justify-center bg-gray-50">
               <div className="text-center px-4">
